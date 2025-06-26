@@ -1,0 +1,132 @@
+// App.jsx – Improved UI for Epident Dental Assistant
+
+import React, { useState } from 'react';
+import axios from 'axios';
+
+const countries = ['India', 'United States', 'United Kingdom', 'Australia', 'Canada'];
+const genders = ['Male', 'Female', 'Other'];
+
+const App = () => {
+  const [agreed, setAgreed] = useState(false);
+  const [patient, setPatient] = useState({
+    age: '',
+    gender: '',
+    chief_complaint: '',
+    country: '',
+    findings: '',
+    visit_date: ''
+  });
+
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setPatient({ ...patient, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async () => {
+    const findingsList = patient.findings.split(',').map(f => f.trim());
+    setLoading(true);
+    try {
+      const res = await axios.post('http://localhost:8000/recommend', {
+        ...patient,
+        age: parseInt(patient.age),
+        findings: findingsList
+      });
+      setResult(res.data);
+    } catch (err) {
+      console.error(err);
+      setResult({ error: 'Failed to fetch recommendations.' });
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="p-6 max-w-xl mx-auto">
+      <div className="flex items-center gap-4 mb-6">
+        <img src="/download.png" alt="Epident Logo" className="h-12 w-auto object-contain" />
+        <h1 className="text-3xl font-bold text-[#3E1F2B]">
+          Epident Dental Assistant
+          <span className='text-sm block font-normal'>An Assistant from Epistate Health</span>
+        </h1>
+      </div>
+
+      <h2 className="text-xl font-semibold mb-4 text-[#5B2A86]">Treatment Planner</h2>
+
+      <input name="age" type="number" placeholder="Age" className="border p-2 w-full mb-2" onChange={handleChange} />
+
+      <select name="gender" className="border p-2 w-full mb-2" onChange={handleChange}>
+        <option value="">Select Gender</option>
+        {genders.map(g => <option key={g} value={g}>{g}</option>)}
+      </select>
+
+      <input name="chief_complaint" placeholder="Chief Complaint" className="border p-2 w-full mb-2" onChange={handleChange} />
+
+      <select name="country" className="border p-2 w-full mb-2" onChange={handleChange}>
+        <option value="">Select Country</option>
+        {countries.map(c => <option key={c} value={c}>{c}</option>)}
+      </select>
+
+      <input
+        name="visit_date"
+        type="date"
+        className="border p-2 w-full mb-2"
+        onChange={handleChange}
+        placeholder="Visit Date"
+      />
+
+      <textarea
+        name="findings"
+        placeholder="Findings (comma-separated)"
+        className="border p-2 w-full mb-4"
+        rows={3}
+        onChange={handleChange}
+      />
+
+      <div className="mb-4">
+        <label className="flex items-start gap-2 text-sm text-[#3E1F2B] font-medium">
+          <input type="checkbox" id="disclaimer" onChange={e => setAgreed(e.target.checked)} className="mt-1" />
+          I acknowledge that Epident Dental Assistant is a support tool only and does not influence or replace medical decisions.
+        </label>
+      </div>
+
+      <button
+        onClick={handleSubmit}
+        className="bg-[#5B2A86] text-white px-6 py-2 rounded disabled:opacity-50"
+        disabled={!agreed || loading}
+      >
+        {loading ? 'Processing...' : 'Get Treatment Plan'}
+      </button>
+
+      {result && (
+        <div className="mt-6 p-4 border rounded bg-[#F6F2EB] border-[#C6A15B]">
+          {result.error ? (
+            <p className="text-red-600">{result.error}</p>
+          ) : (
+            <>
+              <h3 className="font-semibold mb-2">Recommended Treatment Plan:</h3>
+              <ul className="list-disc pl-6">
+                {result.treatment_plan.map((step, idx) => (
+                  <li key={idx}>{typeof step === 'string' ? step : `${step.procedure || step.note} (${step.country_code || ''})`}</li>
+                ))}
+              </ul>
+
+              <h3 className="font-semibold mt-4 mb-2">SNOMED Terms:</h3>
+              <ul className="list-disc pl-6">
+                {result.snomed_terms.map((term, idx) => (
+                  <li key={idx}>{term.term} – {term.code}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      )}
+
+      <p className="text-sm text-[#5B2A86] font-semibold border-t pt-4 mt-6 border-[#E2D4C7]">
+        Note: Epident Dental Assistant is intended as a reference support tool only. It does not influence or replace clinical judgment or professional medical decisions.
+      </p>
+    </div>
+  );
+};
+
+export default App;
