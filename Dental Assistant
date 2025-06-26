@@ -1,0 +1,59 @@
+# main.py (FastAPI backend with SNOMED CT and FHIR integration)
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List
+import requests
+
+app = FastAPI()
+
+class PatientInfo(BaseModel):
+    age: int
+    gender: str
+    chief_complaint: str
+    country: str
+    findings: List[str]
+
+# SNOMED CT search (uses Snowstorm - open SNOMED browser)
+def search_snomed(term: str):
+    url = f"https://snowstorm.snomed.io/MAIN/concepts?term={term}&activeFilter=true&limit=1"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        results = response.json()
+        if results['items']:
+            return results['items'][0]['pt']['term'], results['items'][0]['conceptId']
+        else:
+            return term, "Unknown"
+    except Exception as e:
+        return term, "Error"
+
+# Simple rule-based treatment recommender with SNOMED
+def recommend_treatment(data: PatientInfo):
+    treatment_plan = []
+    snomed_codes = []
+
+    for finding in data.findings:
+        term, code = search_snomed(finding)
+        snomed_codes.append({"term": term, "code": code})
+
+        if "caries" in term.lower():
+            treatment_plan.append("Root Canal Treatment" if "deep" in finding.lower() else "Filling")
+        elif "fracture" in term.lower():
+            treatment_plan.append("Crown or Extraction")
+
+    # Country-specific guidelines
+    if data.country.lower() == "india":
+        treatment_plan.append("Follow DCI protocols")
+    elif data.country.lower() == "us":
+        treatment_plan.append("ADA coding and insurance mapping")
+
+    return treatment_plan, snomed_codes
+
+@app.post("/recommend")
+def get_recommendation(patient: PatientInfo):
+    plan, codes = recommend_treatment(patient)
+    return {
+        "treatment_plan": plan,
+        "snomed_terms": codes
+    }
