@@ -1,132 +1,254 @@
-// App.jsx – Improved UI for Epident Dental Assistant
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Epident AI Dental Assistant - Main App</title>
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  .container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+  h1, h2 {
+    color: #0055a4;
+  }
+  .btn {
+    background-color: #0055a4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .btn-secondary {
+    background-color: #f5a623;
+  }
+  label {
+    display: block;
+    margin-top: 15px;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  .section {
+    margin-bottom: 30px;
+  }
+  .disclaimer {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 20px;
+    background: #f9f9f9;
+    padding: 10px;
+    border-left: 4px solid #f5a623;
+  }
+  .image-preview {
+    margin-top: 10px;
+    max-width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  .ai-flags {
+    background-color: #fff5e5;
+    padding: 10px;
+    margin-top: 15px;
+    border-left: 4px solid #f5a623;
+  }
+  #logoutBtn {
+    float: right;
+    background-color: #e63946;
+    margin-bottom: 20px;
+    border: none;
+    padding: 10px 15px;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
 
-import React, { useState } from 'react';
-import axios from 'axios';
+<div class="container" id="treatmentPlanning">
+  <button id="logoutBtn">Logout</button>
+  <h1>Treatment Planning</h1>
+  <div class="section">
+    <label for="country">Select Country</label>
+    <select id="country">
+      <option value="IN">India</option>
+      <option value="US">United States</option>
+      <option value="NP">Nepal</option>
+    </select>
 
-const countries = ['India', 'United States', 'United Kingdom', 'Australia', 'Canada'];
-const genders = ['Male', 'Female', 'Other'];
+    <label for="region">Select Area</label>
+    <select id="region">
+      <option value="urban">Urban</option>
+      <option value="rural">Rural</option>
+    </select>
 
-const App = () => {
-  const [agreed, setAgreed] = useState(false);
-  const [patient, setPatient] = useState({
-    age: '',
-    gender: '',
-    chief_complaint: '',
-    country: '',
-    findings: '',
-    visit_date: ''
+    <label for="insurance">Insurance Options</label>
+    <select id="insurance">
+      <option value="none">No Insurance</option>
+      <option value="ayushman">Ayushman Bharat (India)</option>
+      <option value="private">Private Insurance</option>
+    </select>
+
+    <label for="chiefComplaint">Chief Complaint</label>
+    <input type="text" id="chiefComplaint" placeholder="e.g. Tooth pain in lower left molar" />
+
+    <label for="diagnosis">Diagnosis</label>
+    <textarea id="diagnosis" rows="3" placeholder="e.g. Deep caries in 36, requiring RCT"></textarea>
+
+    <label for="xrayUpload">Upload X-ray for Epident AI Review</label>
+    <input type="file" id="xrayUpload" accept="image/*" />
+    <img id="xrayPreview" class="image-preview" />
+
+    <label for="photoUpload">Upload Clinical Photo for Epident AI Review</label>
+    <input type="file" id="photoUpload" accept="image/*" />
+    <img id="photoPreview" class="image-preview" />
+
+    <div class="ai-flags" id="aiInsights">
+      <strong>Epident AI Insights:</strong>
+      <ul>
+        <li>Analyzing image... (This will be replaced by backend Epident AI integration)</li>
+      </ul>
+    </div>
+
+    <label for="suggestedPlan">Suggested Treatment Plan</label>
+    <select id="suggestedPlan">
+      <option value="RCT">Root Canal Treatment (RCT)</option>
+      <option value="FILLING">Filling/Restoration</option>
+      <option value="EXTRACTION">Extraction and Prosthesis</option>
+    </select>
+
+    <label for="costEstimate">Estimated Treatment Cost</label>
+    <input type="text" id="costEstimate" readonly />
+  </div>
+
+  <div class="section">
+    <label for="customPlan">Custom Treatment Plan</label>
+    <textarea id="customPlan" rows="4" placeholder="Describe your treatment plan here"></textarea>
+    <button class="btn">Save Treatment Plan</button>
+  </div>
+
+  <div class="disclaimer">
+    This clinical assistant is designed to provide suggested treatment options to support qualified dentists. It does not replace or interfere with the professional judgment and decision-making of licensed dental practitioners.
+  </div>
+</div>
+
+<div class="container" id="patientEducation">
+  <h1>Patient Education</h1>
+  <div class="section">
+    <label for="languageSelect">Select Language</label>
+    <select id="languageSelect">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+      <option value="ta">Tamil</option>
+    </select>
+
+    <label for="eduTopic">Select Topic</label>
+    <select id="eduTopic">
+      <option>Tooth Decay</option>
+      <option>Root Canal</option>
+      <option>Braces and Orthodontics</option>
+      <option>Wisdom Tooth Removal</option>
+    </select>
+
+    <label for="whatsappNumber">Patient WhatsApp Number</label>
+    <input type="text" id="whatsappNumber" placeholder="e.g. +919876543210" />
+    <button class="btn-secondary" id="sendWhatsApp">Send Education Material via WhatsApp</button>
+
+    <div id="eduContent" style="margin-top:20px;">
+      <h2>Education Material</h2>
+      <p>This section will dynamically show patient-friendly explanations, videos, or links based on selected topic and language.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Redirect to login if not logged in
+  if (!localStorage.getItem('loggedInUser')) {
+    alert('Please login to access this page.');
+    window.location.href = 'login.html';
+  }
+
+  const costMap = {
+    IN: { urban: { RCT: "₹5000 - ₹12000", FILLING: "₹1000 - ₹3000", EXTRACTION: "₹1500 - ₹5000" }, rural: { RCT: "₹3000 - ₹8000", FILLING: "₹500 - ₹1500", EXTRACTION: "₹1000 - ₹3000" } },
+    US: { urban: { RCT: "$800 - $1500", FILLING: "$200 - $600", EXTRACTION: "$400 - $1000" }, rural: { RCT: "$600 - $1200", FILLING: "$150 - $400", EXTRACTION: "$300 - $800" } },
+    NP: { urban: { RCT: "NPR 10000 - NPR 20000", FILLING: "NPR 2000 - NPR 6000", EXTRACTION: "NPR 3000 - NPR 8000" }, rural: { RCT: "NPR 7000 - NPR 15000", FILLING: "NPR 1000 - NPR 3000", EXTRACTION: "NPR 2000 - NPR 6000" } }
+  };
+
+  function updateCostEstimate() {
+    const country = document.getElementById('country').value;
+    const region = document.getElementById('region').value;
+    const plan = document.getElementById('suggestedPlan').value;
+    const insurance = document.getElementById('insurance').value;
+    let cost = costMap[country][region][plan];
+
+    if (country === 'IN' && insurance === 'ayushman') {
+      cost += ' (Covered under Ayushman Bharat)';
+    } else if (insurance === 'private') {
+      cost += ' (May be reimbursable via private insurance)';
+    }
+
+    document.getElementById('costEstimate').value = cost;
+  }
+
+  document.getElementById('country').addEventListener('change', updateCostEstimate);
+  document.getElementById('region').addEventListener('change', updateCostEstimate);
+  document.getElementById('suggestedPlan').addEventListener('change', updateCostEstimate);
+  document.getElementById('insurance').addEventListener('change', updateCostEstimate);
+
+  document.getElementById('eduTopic').addEventListener('change', function () {
+    const topic = this.value;
+    const lang = document.getElementById('languageSelect').value;
+    const eduContent = document.getElementById('eduContent');
+    eduContent.innerHTML = `<h2>${topic} (${lang.toUpperCase()})</h2><p>Content for ${topic} in selected language (${lang}) will appear here. This can include images, videos, and preventive tips.</p>`;
   });
 
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (e) => {
-    setPatient({ ...patient, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async () => {
-    const findingsList = patient.findings.split(',').map(f => f.trim());
-    setLoading(true);
-    try {
-      const res = await axios.post('http://localhost:8000/recommend', {
-        ...patient,
-        age: parseInt(patient.age),
-        findings: findingsList
-      });
-      setResult(res.data);
-    } catch (err) {
-      console.error(err);
-      setResult({ error: 'Failed to fetch recommendations.' });
+  document.getElementById('sendWhatsApp').addEventListener('click', function () {
+    const phone = document.getElementById('whatsappNumber').value.trim();
+    const topic = document.getElementById('eduTopic').value;
+    if (phone) {
+      const message = encodeURIComponent(`Hello! Please find information on your dental topic: ${topic}.`);
+      const url = `https://wa.me/${phone.replace(/[^\d]/g, '')}?text=${message}`;
+      window.open(url, '_blank');
+    } else {
+      alert('Please enter a valid WhatsApp number.');
     }
-    setLoading(false);
-  };
+  });
 
-  return (
-    <div className="p-6 max-w-xl mx-auto">
-      <div className="flex items-center gap-4 mb-6">
-        <img src="/download.png" alt="Epident Logo" className="h-12 w-auto object-contain" />
-        <h1 className="text-3xl font-bold text-[#3E1F2B]">
-          Epident Dental Assistant
-          <span className='text-sm block font-normal'>An Assistant from Epistate Health</span>
-        </h1>
-      </div>
+  document.getElementById('xrayUpload').addEventListener('change', function (event) {
+    const preview = document.getElementById('xrayPreview');
+    preview.src = URL.createObjectURL(event.target.files[0]);
+  });
 
-      <h2 className="text-xl font-semibold mb-4 text-[#5B2A86]">Treatment Planner</h2>
+  document.getElementById('photoUpload').addEventListener('change', function (event) {
+    const preview = document.getElementById('photoPreview');
+    preview.src = URL.createObjectURL(event.target.files[0]);
+  });
 
-      <input name="age" type="number" placeholder="Age" className="border p-2 w-full mb-2" onChange={handleChange} />
+  document.getElementById('logoutBtn').addEventListener('click', function () {
+    localStorage.removeItem('loggedInUser');
+    alert('You have been logged out.');
+    window.location.href = 'login.html';
+  });
 
-      <select name="gender" className="border p-2 w-full mb-2" onChange={handleChange}>
-        <option value="">Select Gender</option>
-        {genders.map(g => <option key={g} value={g}>{g}</option>)}
-      </select>
-
-      <input name="chief_complaint" placeholder="Chief Complaint" className="border p-2 w-full mb-2" onChange={handleChange} />
-
-      <select name="country" className="border p-2 w-full mb-2" onChange={handleChange}>
-        <option value="">Select Country</option>
-        {countries.map(c => <option key={c} value={c}>{c}</option>)}
-      </select>
-
-      <input
-        name="visit_date"
-        type="date"
-        className="border p-2 w-full mb-2"
-        onChange={handleChange}
-        placeholder="Visit Date"
-      />
-
-      <textarea
-        name="findings"
-        placeholder="Findings (comma-separated)"
-        className="border p-2 w-full mb-4"
-        rows={3}
-        onChange={handleChange}
-      />
-
-      <div className="mb-4">
-        <label className="flex items-start gap-2 text-sm text-[#3E1F2B] font-medium">
-          <input type="checkbox" id="disclaimer" onChange={e => setAgreed(e.target.checked)} className="mt-1" />
-          I acknowledge that Epident Dental Assistant is a support tool only and does not influence or replace medical decisions.
-        </label>
-      </div>
-
-      <button
-        onClick={handleSubmit}
-        className="bg-[#5B2A86] text-white px-6 py-2 rounded disabled:opacity-50"
-        disabled={!agreed || loading}
-      >
-        {loading ? 'Processing...' : 'Get Treatment Plan'}
-      </button>
-
-      {result && (
-        <div className="mt-6 p-4 border rounded bg-[#F6F2EB] border-[#C6A15B]">
-          {result.error ? (
-            <p className="text-red-600">{result.error}</p>
-          ) : (
-            <>
-              <h3 className="font-semibold mb-2">Recommended Treatment Plan:</h3>
-              <ul className="list-disc pl-6">
-                {result.treatment_plan.map((step, idx) => (
-                  <li key={idx}>{typeof step === 'string' ? step : `${step.procedure || step.note} (${step.country_code || ''})`}</li>
-                ))}
-              </ul>
-
-              <h3 className="font-semibold mt-4 mb-2">SNOMED Terms:</h3>
-              <ul className="list-disc pl-6">
-                {result.snomed_terms.map((term, idx) => (
-                  <li key={idx}>{term.term} – {term.code}</li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
-      )}
-
-      <p className="text-sm text-[#5B2A86] font-semibold border-t pt-4 mt-6 border-[#E2D4C7]">
-        Note: Epident Dental Assistant is intended as a reference support tool only. It does not influence or replace clinical judgment or professional medical decisions.
-      </p>
-    </div>
-  );
-};
-
-export default App;
+  // Initialize cost estimate on load
+  updateCostEstimate();
+</script>
+</body>
+</html>
