@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Epident AI - Login</title>
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  .container {
+    max-width: 400px;
+    margin: 80px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    color: #0055a4;
+    text-align: center;
+  }
+  label {
+    display: block;
+    margin-top: 15px;
+  }
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  button {
+    background-color: #0055a4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 25px;
+    width: 100%;
+  }
+  .error {
+    color: red;
+    margin-top: 10px;
+    font-size: 0.9rem;
+  }
+  .link {
+    text-align: center;
+    margin-top: 15px;
+  }
+  .link a {
+    color: #0055a4;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Login</h1>
+  <label for="username">Username</label>
+  <input type="text" id="username" placeholder="Enter username" />
+  <label for="password">Password</label>
+  <input type="password" id="password" placeholder="Enter password" />
+  <button id="loginBtn">Login</button>
+  <div class="error" id="errorMsg"></div>
+  <div class="link">Don't have an account? <a href="register.html">Register here</a></div>
+</div>
+
+<script>
+  document.getElementById('loginBtn').addEventListener('click', function () {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const errorMsg = document.getElementById('errorMsg');
+
+    if (!username || !password) {
+      errorMsg.textContent = 'Please enter username and password.';
+      return;
+    }
+    const storedPassword = localStorage.getItem(username);
+    if (!storedPassword) {
+      errorMsg.textContent = 'User not found. Please register.';
+      return;
+    }
+    if (password !== storedPassword) {
+      errorMsg.textContent = 'Incorrect password.';
+      return;
+    }
+    // Save logged in user in sessionStorage
+    sessionStorage.setItem('loggedInUser', username);
+    alert('Login successful!');
+    window.location.href = 'mainApp.html';
+  });
+</script>
+</body>
+</html>
