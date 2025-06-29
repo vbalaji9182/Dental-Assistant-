@@ -1,0 +1,5 @@
+services:
+  - type: web
+    name: epident-ai
+    env: static
+    staticPublishPath: public
